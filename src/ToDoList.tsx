@@ -27,25 +27,39 @@ import { useForm } from "react-hook-form";
 // }
 
 function ToDoList (){
-    const { register, watch, handleSubmit } = useForm();
+    // const { register, watch, handleSubmit } = useForm();
+    const { register, handleSubmit, formState } = useForm();
+
     const onValid = (data:any) => {
         console.log(data)
     }
+
+    console.log(formState.errors)
+    // formState.error updates what kind of error that each input has..
+
     // console.log(watch())
-    // onChange Event handler
-    // input props & setState 역할을 다 한다. 
+    
+    /*  
+        react hook form does
+        onChange Event handler
+        input props & setState 역할을 다 한다. 
 
+        Register props 
+        => https://react-hook-form.com/api/useform/register
+    */
 
-    return <div>
-             <form onSubmit={handleSubmit(onValid)}>
-                 <input {...register("Email", { required: true })} placeholder="Email"/>
-                 <input {...register("First Name", { required: true, minLength: 10 })} placeholder="First Name"/>
-                 <input {...register("Last Name", { required: true })} placeholder="Last Name"/>
-                 <input {...register("Username", { required: true })} placeholder="Username"/>
-                 <input {...register("Password", { required: true })} placeholder="Password"/>
-                 <button>Add</button>
-             </form>
-         </div>;
+    return (
+        <div>
+            <form style={{display:"flex", flexDirection: "column"}} onSubmit={handleSubmit(onValid)}>
+                <input {...register("Email", { required: "Please Enter your email address" })} placeholder="Email"/>
+                <input {...register("First Name", { required: true, minLength: 10 })} placeholder="First Name"/>
+                <input {...register("Last Name", { required: true })} placeholder="Last Name"/>
+                <input {...register("Username", { required: true })} placeholder="Username"/>
+                <input {...register("Password", { required: true })} placeholder="Password"/>
+                <button>Add</button>
+            </form>
+        </div>
+    );
 }
 
 export default ToDoList;

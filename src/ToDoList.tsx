@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
 // function ToDoList() {
 //     const [todo, setTodo] = useState("");
@@ -26,38 +27,45 @@ import { useForm } from "react-hook-form";
 //     </div>;
 // }
 
+const toDoState = atom<ITodo[]>({
+    key: "toDo",
+    default: [],
+});
+
+interface IForm {
+    toDo: string;
+}
+
+interface ITodo{
+    text: string;
+    id: number;
+    category: "TO_DO" | "ONGOING" | "DONE";
+}
+
 function ToDoList (){
     // const { register, watch, handleSubmit } = useForm();
-    const { register, handleSubmit, formState } = useForm();
+    const { register, handleSubmit, setValue } = useForm<IForm>();    
+    const [toDos, setToDos] = useRecoilState(toDoState);
 
-    const onValid = (data:any) => {
-        console.log(data)
+
+    const onSubmit = ({ toDo }:IForm) => {
+        setValue("toDo", "");
+        setToDos((oldToDos) => [{ text:toDo, category:"TO_DO", id: Date.now() }, ...oldToDos]);
     }
 
-    console.log(formState.errors)
-    // formState.error updates what kind of error that each input has..
-
-    // console.log(watch())
-    
-    /*  
-        react hook form does
-        onChange Event handler
-        input props & setState 역할을 다 한다. 
-
-        Register props 
-        => https://react-hook-form.com/api/useform/register
-    */
+    console.log(toDos)
 
     return (
         <div>
-            <form style={{display:"flex", flexDirection: "column"}} onSubmit={handleSubmit(onValid)}>
-                <input {...register("Email", { required: "Please Enter your email address" })} placeholder="Email"/>
-                <input {...register("First Name", { required: true, minLength: 10 })} placeholder="First Name"/>
-                <input {...register("Last Name", { required: true })} placeholder="Last Name"/>
-                <input {...register("Username", { required: true })} placeholder="Username"/>
-                <input {...register("Password", { required: true })} placeholder="Password"/>
+            <h1>To Dos</h1>
+            <hr/>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <input {...register("toDo", { required: "Please write a todo" })} placeholder="Write a to do"/>
                 <button>Add</button>
             </form>
+            <ul>
+                {toDos.map(toDo => <li key={toDo.id}>{toDo.text}</li>)}
+            </ul>
         </div>
     );
 }
